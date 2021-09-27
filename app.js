@@ -4,6 +4,7 @@ const cors = require("cors");
 const mongoose = require('mongoose');
 
 const app = express();
+app.use(cors());
 mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true}).catch(console.error);
 
 const itemSchema = new mongoose.Schema({
@@ -16,7 +17,7 @@ const itemSchema = new mongoose.Schema({
     cost: Number,
     stock: Number
 })
-let Item = mongoose.model('Item', itemSchema)
+let Item = mongoose.model('Item', itemSchema);
 
 app.get('/', (req, res) => {
     res.send('<h1>Kzarka API</h1>');
@@ -61,7 +62,6 @@ app.get('/:region/marketplace/:itemid', (req, res) => {
         res.send(data);
     })
 })
-
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
