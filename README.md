@@ -8,6 +8,7 @@ Many Pearl Shop items are not included within the database. Currently only suppo
 
 The API provides the following routes:
 
-- `/<region>/marketplace/`: Returns marketplace information of all items
-- `/<region>/marketplace/<item_id>`: Returns information about a single item, queried using its BDO item id
+- `/<region>/marketplace/`: Returns marketplace information of all items.
+- `/<region>/marketplace/id/<item_id>`: Returns information about a single item, queried using its BDO item id.
+- `/<region>/marketplace/name/<item_name>`: Returns list of items that match the provided name. Supports partial and exact matches.
 - `/<region>/imperialcooking/`: Retrieves information about items that can be transformed into imperial cooking crates. The query `cratelevel` can also be used to filter the list.

@@ -55,7 +55,15 @@ app.get('/:region/marketplace/', (req, res) => {
     })
 })
 
-app.get('/:region/marketplace/:itemid', (req, res) => {
+app.get('/:region/marketplace/name/:name', (req, res) => {
+    const searchKey = new RegExp(req.params.name, 'i');
+    Item.find({name: searchKey}, function(error, data) {
+        if (error) return console.error(error);
+        res.send(data);
+    })
+})
+
+app.get('/:region/marketplace/id/:itemid', (req, res) => {
     const itemIndex = req.params.itemid
     Item.findOne({id: itemIndex}, function(error, data) {
         if (error) return console.error(error);
