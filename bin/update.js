@@ -16,24 +16,36 @@ const itemSchema = new mongoose.Schema({
 })
 let Item = mongoose.model('Item', itemSchema)
 
+let rows = [];
+
 fetch("https://docs.google.com/spreadsheets/d/1w7onDHmqgwuwIxV21Yiv2RAeOBQJegj-m6EIQFhxd2c/gviz/tq?tqx=out:json")
   .then(res => res.text())
   .then(text => {
     const json = JSON.parse(text.substr(47).slice(0, -2))
-    const rows = json.table.rows;
-    rows.forEach(element => {
-      const itemIndex = element.c[1].v;
-      const itemCount = element.c[2].v;
-      const itemPrice = element.c[4].v;
+    const data = json.table.rows;
+    data.forEach(element => {
       const itemUpdate = {
-        "cost": itemPrice,
-        "stock": itemCount
+        "id": element.c[1].v,
+        "cost": element.c[4].v,
+        "stock": element.c[2].v
       }
-      Item.findOneAndUpdate({id: itemIndex}, itemUpdate, {new: true}, function(error, updated) {
-        if (error) return console.error(error);
-      });
+      rows.push(itemUpdate);
     });
-    console.log("Updated items");
-    mongoose.disconnect();
-    process.exit();
-  })
+
+    const bulkUpdateCallback = function(error, result) {
+      console.log(result);
+      mongoose.disconnect();
+      process.exit();
+    }
+    
+    const bulkOps = rows.map(function(item) {
+      return {
+        "updateOne": {
+          "filter": { "id": item.id },
+          "update": { "$set": { "cost": item.cost, "stock": item.stock } }
+        }
+      }
+    });
+    
+    Item.collection.bulkWrite(bulkOps, { "ordered": true, w: 1 }, bulkUpdateCallback);
+  });
